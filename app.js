@@ -8,10 +8,7 @@ app.use(express.json());
 const mongoDBURI = 'mongodb://localhost:27017/estudiantesDB';
 
 // Conexión a MongoDB
-mongoose.connect(mongoDBURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(mongoDBURI, {})
 .then(() => console.log('Conectado a MongoDB'))
 .catch(err => console.error('Error al conectar a MongoDB:', err));
 
