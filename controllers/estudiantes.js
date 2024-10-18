@@ -48,15 +48,23 @@ const updateEstudiante = async (req, res = response) => {
 
 const deleteEstudiante = async (req, res = response) => {
     const { matricula } = req.params;
+
+    if (!matricula || isNaN(parseInt(matricula))) {
+        return res.status(400).json({ msg: 'Matrícula no válida. Debe ser un número.' });
+    }
+
     try {
-        const deletedEstudiante = await Estudiante.findOneAndDelete({ matricula: parseInt(matricula) });
+        const parsedMatricula = parseInt(matricula);
+        const deletedEstudiante = await Estudiante.findOneAndDelete({ matricula: parsedMatricula });
+
         if (!deletedEstudiante) {
             return res.status(404).json({ msg: 'Estudiante no encontrado' });
         }
-        res.json({
+        res.status(200).json({
             msg: `El estudiante con matrícula ${matricula} ha sido eliminado`,
             estudiante: deletedEstudiante
         });
+        
     } catch (error) {
         res.status(500).json({ msg: 'Error al eliminar el estudiante', error });
     }
