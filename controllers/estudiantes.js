@@ -10,6 +10,16 @@ const getEstudiantes = async (req, res = response) => {
     }
 };
 
+const getEstudiante = async (req, res = response) => {
+    const { matricula } = req.params;
+    try {
+        const estudiantes = await Estudiante.find({ matricula: parseInt(matricula) });
+        res.json(estudiantes);
+    } catch (error) {
+        res.status(500).json({ msg: 'Error al obtener estudiantes', error });
+    }
+};
+
 const addEstudiante = async (req, res = response) => {
     const { matricula, nombre, carrera, edad } = req.body;
     try {
@@ -46,6 +56,27 @@ const updateEstudiante = async (req, res = response) => {
     }
 };
 
+const updateEdadEstudiante = async (req, res = response) => {
+    const { matricula } = req.params;
+    const { edad } = req.body;
+    try {
+        const updatedEstudiante = await Estudiante.findOneAndUpdate(
+            { matricula: parseInt(matricula) },
+            { edad },
+            { new: true }
+        );
+        if (!updatedEstudiante) {
+            return res.status(404).json({ msg: 'Estudiante no encontrado' });
+        }
+        res.json({
+            msg: `El estudiante con matrícula ${matricula} ha sido actualizado`,
+            nombre: updatedEstudiante.nombre,
+        });
+    } catch (error) {
+        res.status(500).json({ msg: 'Error al actualizar el estudiante', error });
+    }
+};
+
 const deleteEstudiante = async (req, res = response) => {
     const { matricula } = req.params;
     if (!matricula) {
@@ -65,4 +96,5 @@ const deleteEstudiante = async (req, res = response) => {
     }
 };
 
-module.exports = {getEstudiantes,addEstudiante,updateEstudiante,deleteEstudiante};
+module.exports = {getEstudiantes,addEstudiante,updateEstudiante,
+    updateEdadEstudiante, deleteEstudiante, getEstudiante};
