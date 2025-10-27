@@ -4,11 +4,10 @@ const app = express();
 
 app.use(express.json());
 
-// URL de conexión a MongoDB (base de datos estudiantes)
+//--> const mongoDBURI = 'mongodb://usuario:pass@localhost:27017/estudiantesDB';
 const mongoDBURI = 'mongodb://localhost:27017/estudiantesDB';
 
-// Conexión a MongoDB
-mongoose.connect(mongoDBURI, {})
+mongoose.connect(mongoDBURI)
 .then(() => console.log('Conectado a MongoDB'))
 .catch(err => console.error('Error al conectar a MongoDB:', err));
 
