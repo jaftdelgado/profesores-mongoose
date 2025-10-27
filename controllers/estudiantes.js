@@ -13,10 +13,11 @@ const getEstudiantes = async (req, res = response) => {
 const getEstudiante = async (req, res = response) => {
     const { matricula } = req.params;
     try {
-        const estudiantes = await Estudiante.find({ matricula: parseInt(matricula) });
-        res.json(estudiantes);
+        const estudiante = await Estudiante.findOne({ matricula: parseInt(matricula) });
+        if (!estudiante) return res.status(404).json({ msg: 'Estudiante no encontrado' });
+        res.json(estudiante);
     } catch (error) {
-        res.status(500).json({ msg: 'Error al obtener estudiantes', error });
+        res.status(500).json({ msg: 'Error al obtener estudiante', error });
     }
 };
 
@@ -25,11 +26,17 @@ const addEstudiante = async (req, res = response) => {
     try {
         const nuevoEstudiante = new Estudiante({ matricula, nombre, carrera, edad });
         await nuevoEstudiante.save();
-        res.json({
+        res.status(201).json({
             msg: `El estudiante ${nombre} ha sido creado`,
             estudiante: nuevoEstudiante
         });
     } catch (error) {
+        if (error.code === 11000) {
+            return res.status(409).json({ msg: 'La matrícula ya existe' });
+        }
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ msg: 'Datos inválidos', details: error.errors });
+        }
         res.status(500).json({ msg: 'Error al crear el estudiante', error });
     }
 };
@@ -42,7 +49,7 @@ const updateEstudiante = async (req, res = response) => {
         const updatedEstudiante = await Estudiante.findOneAndUpdate(
             { matricula: parseInt(matricula) },
             { nombre, carrera, edad },
-            { new: true }
+            { new: true, runValidators: true}
         );
         if (!updatedEstudiante) {
             return res.status(404).json({ msg: 'Estudiante no encontrado' });
@@ -52,6 +59,9 @@ const updateEstudiante = async (req, res = response) => {
             estudiante: updatedEstudiante
         });
     } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ msg: 'Datos inválidos', details: error.errors });
+        }
         res.status(500).json({ msg: 'Error al actualizar el estudiante', error });
     }
 };
@@ -63,7 +73,7 @@ const updateEdadEstudiante = async (req, res = response) => {
         const updatedEstudiante = await Estudiante.findOneAndUpdate(
             { matricula: parseInt(matricula) },
             { edad },
-            { new: true }
+            { new: true, runValidators: true }
         );
         if (!updatedEstudiante) {
             return res.status(404).json({ msg: 'Estudiante no encontrado' });
