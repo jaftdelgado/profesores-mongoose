@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const profesorCtrl = require('../controllers/profesor.controller');
+
+router.post('/', profesorCtrl.crearProfesor);
+router.get('/', profesorCtrl.obtenerProfesores);
+router.get('/:id', profesorCtrl.obtenerProfesorPorId);
+router.put('/:id', profesorCtrl.actualizarProfesor);
+router.delete('/:id', profesorCtrl.eliminarProfesor);
+
+module.exports = router;

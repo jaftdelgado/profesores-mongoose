@@ -1,0 +1,58 @@
+const Profesor = require('../models/profesor.model');
+exports.crearProfesor = async (req, res) => {
+  try {
+    const profesor = new Profesor(req.body);
+    await profesor.save();
+    return res.status(201).json(profesor);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+exports.obtenerProfesores = async (req, res) => {
+  try {
+    const profesores = await Profesor.find();
+    return res.json(profesores);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.obtenerProfesorPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const profesor = await Profesor.findById(id);
+    if (!profesor) {
+      return res.status(404).json({ message: 'Profesor no encontrado' });
+    }
+    return res.json(profesor);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.actualizarProfesor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const profesorActualizado = await Profesor.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!profesorActualizado) {
+      return res.status(404).json({ message: 'Profesor no encontrado para actualizar' });
+    }
+    return res.json(profesorActualizado);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+exports.eliminarProfesor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const profesorEliminado = await Profesor.findByIdAndDelete(id);
+    if (!profesorEliminado) {
+      return res.status(404).json({ message: 'Profesor no encontrado para eliminar' });
+    }
+    return res.json({ message: 'Profesor eliminado correctamente' });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

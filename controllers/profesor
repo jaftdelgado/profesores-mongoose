@@ -1,0 +1,13 @@
+const mongoose = require('mongoose');
+
+const ProfesorSchema = new mongoose.Schema({
+  nombre: { type: String, required: true },
+  apellido: { type: String, required: true },
+  email:    { type: String, required: true, unique: true },
+  departamento: { type: String },
+  fechaContratacion: { type: Date, default: Date.now }
+}, {
+  timestamps: true
+});
+
+module.exports = mongoose.model('Profesor', ProfesorSchema);
